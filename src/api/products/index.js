@@ -25,4 +25,14 @@ productsRouter.post("/", async (req, res, next) => {
   }
 });
 
+// GET all products
+productsRouter.get("/", async (req, res, next) => {
+  try {
+    const products = await getProducts();
+    res.send(products);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default productsRouter;
