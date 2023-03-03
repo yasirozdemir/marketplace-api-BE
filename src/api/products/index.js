@@ -214,4 +214,39 @@ productsRouter.get(
   }
 );
 
+// PUT update a single comment
+productsRouter.put(
+  "/:productId/reviews/:reviewId",
+  isProductExisted,
+  async (req, res, next) => {
+    try {
+      const reviews = await getReviews();
+      const index = reviews.findIndex((p) => p.id === req.params.reviewId);
+      if (index !== -1) {
+        const updatedReview = {
+          ...reviews[index],
+          ...req.body,
+          updatedAt: new Date(),
+        };
+        reviews[index] = updatedReview;
+        await writeReviews(reviews);
+        res.send({
+          success: true,
+          message: "Review updated!",
+          id: updatedReview.id,
+        });
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Review with id ${req.params.reviewId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default productsRouter;
