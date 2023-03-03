@@ -51,8 +51,13 @@ const reviewSchema = {
   },
   rate: {
     in: ["body"],
-    isNumeric: {
-      errorMessage: "Rate is a mandatory field and it needs to be a number!",
+    isFloat: {
+      options: {
+        min: 0,
+        max: 5,
+      },
+      errorMessage:
+        "Rate is a mandatory field and it needs to be a number between 0-5!",
     },
   },
 };
