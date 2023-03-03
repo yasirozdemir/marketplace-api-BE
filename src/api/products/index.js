@@ -107,7 +107,12 @@ productsRouter.delete("/:productId", async (req, res, next) => {
       await writeProducts(remainingProducts);
       res.status(204).send();
     } else {
-      next(createHttpError(404, `Product with id ${req.params.id} not found!`));
+      next(
+        createHttpError(
+          404,
+          `Product with id ${req.params.productId} not found!`
+        )
+      );
     }
   } catch (error) {
     next(error);
@@ -235,6 +240,33 @@ productsRouter.put(
           message: "Review updated!",
           id: updatedReview.id,
         });
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Review with id ${req.params.reviewId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// DELETE a single review
+productsRouter.delete(
+  "/:productId/reviews/:reviewId",
+  isProductExisted,
+  async (req, res, next) => {
+    try {
+      const reviews = await getReviews();
+      const remainingReviews = reviews.filter(
+        (r) => r.id !== req.params.reviewId
+      );
+      if (reviews.length !== remainingReviews.length) {
+        await writeReviews(remainingReviews);
+        res.status(204).send();
       } else {
         next(
           createHttpError(
