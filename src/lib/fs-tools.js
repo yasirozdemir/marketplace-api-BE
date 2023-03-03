@@ -14,7 +14,6 @@ export const productsJSONPath = join(dataFolderPath, "products.json");
 export const productsPublicPath = join(publicFolderPath, "img/products");
 
 export const reviewsJSONPath = join(dataFolderPath, "reviews.json");
-console.log(reviewsJSONPath);
 
 export const getProducts = () => readJSON(productsJSONPath);
 export const writeProducts = (products) =>

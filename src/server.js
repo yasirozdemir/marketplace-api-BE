@@ -12,6 +12,6 @@ server.use(Express.json());
 server.use("/products", productsRouter);
 
 server.listen(port, () => {
-  console.log(listEndpoints(server));
-  console.log("Server running on port", port);
+  console.table(listEndpoints(server));
+  // console.log("Server running on port", port);
 });
