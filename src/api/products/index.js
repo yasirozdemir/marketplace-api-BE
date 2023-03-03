@@ -42,11 +42,18 @@ productsRouter.post(
   }
 );
 
-// GET all products
+// GET products by category
 productsRouter.get("/", async (req, res, next) => {
   try {
     const products = await getProducts();
-    res.send(products);
+    if (req.query && req.query.category) {
+      const productsByCategory = products.filter(
+        (p) => p.category.toLowerCase() === req.query.category.toLowerCase()
+      );
+      res.send(productsByCategory);
+    } else {
+      res.send(products);
+    }
   } catch (error) {
     next(error);
   }
