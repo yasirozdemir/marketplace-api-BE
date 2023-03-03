@@ -133,17 +133,22 @@ productsRouter.post(
       const products = await getProducts();
       const index = products.findIndex((p) => p.id === req.params.productId);
       if (index !== -1) {
-        const fileExtension = extname(req.file.originalname);
-        const fileName = req.params.productId + fileExtension;
-        await saveProductsImage(fileName, req.file.buffer);
-        products[
-          index
-        ].imageUrl = `http://localhost:3001/img/products/${fileName}`;
-        await writeProducts(products);
-        res.status(201).send({
-          success: true,
-          message: `Cover uploaded to product with id ${req.params.productId}`,
-        });
+        if (req.file) {
+          const fileExtension = extname(req.file.originalname);
+          const fileName = req.params.productId + fileExtension;
+          await saveProductsImage(fileName, req.file.buffer);
+          products[
+            index
+          ].imageUrl = `http://localhost:3001/img/products/${fileName}`;
+          await writeProducts(products);
+          res.status(201).send({
+            success: true,
+            message: `Cover uploaded to product with id ${req.params.productId}`,
+            fileName: fileName,
+          });
+        } else {
+          next(createHttpError(404, "There is no file to upload!"));
+        }
       } else {
         next(
           createHttpError(
