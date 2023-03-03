@@ -5,8 +5,10 @@ import uniqid from "uniqid";
 import { extname } from "path";
 import {
   getProducts,
+  getReviews,
   saveProductsImage,
   writeProducts,
+  writeReviews,
 } from "../../lib/fs-tools.js";
 import { checkProductSchema, triggerBadRequest } from "../validation.js";
 
@@ -123,12 +125,10 @@ productsRouter.post(
     try {
       const products = await getProducts();
       const index = products.findIndex((p) => p.id === req.params.productId);
-
       if (index !== -1) {
         const fileExtension = extname(req.file.originalname);
         const fileName = req.params.productId + fileExtension;
         await saveProductsImage(fileName, req.file.buffer);
-
         products[
           index
         ].imageUrl = `http://localhost:3001/img/products/${fileName}`;
@@ -150,5 +150,29 @@ productsRouter.post(
     }
   }
 );
+
+// POST a review on a product
+productsRouter.post("/:productId/reviews", async (req, res, next) => {
+  try {
+    const reviews = await getReviews();
+    const newReview = {
+      ...req.body,
+      id: uniqid(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      productId: req.params.productId,
+      rate: 3,
+    };
+    reviews.push(newReview);
+    await writeReviews(reviews);
+    res.status(201).send({
+      success: true,
+      message: "Review saved!",
+      id: newReview.id,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default productsRouter;
