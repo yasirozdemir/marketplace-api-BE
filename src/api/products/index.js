@@ -72,4 +72,22 @@ productsRouter.put("/:productId", async (req, res, next) => {
   }
 });
 
+// DELETE a single product
+productsRouter.delete("/:productId", async (req, res, next) => {
+  try {
+    const products = await getProducts();
+    const remainingProducts = products.filter(
+      (p) => p.id !== req.params.productId
+    );
+    if (products.length !== remainingProducts.length) {
+      await writeProducts(remainingProducts);
+      res.status(204).send();
+    } else {
+      next(createHttpError(404, `Product with id ${req.params.id} not found!`));
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default productsRouter;
