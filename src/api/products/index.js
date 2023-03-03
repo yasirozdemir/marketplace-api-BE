@@ -10,7 +10,11 @@ import {
   writeProducts,
   writeReviews,
 } from "../../lib/fs-tools.js";
-import { checkProductSchema, triggerBadRequest } from "../validation.js";
+import {
+  checkProductSchema,
+  checkReviewSchema,
+  triggerBadRequest,
+} from "../validation.js";
 import { isProductExisted } from "../../lib/middlewares.js";
 
 const productsRouter = Express.Router();
@@ -163,6 +167,8 @@ productsRouter.post(
 // POST a review on a product
 productsRouter.post(
   "/:productId/reviews",
+  checkReviewSchema,
+  triggerBadRequest,
   isProductExisted,
   async (req, res, next) => {
     try {
@@ -229,6 +235,8 @@ productsRouter.get(
 // PUT update a single comment
 productsRouter.put(
   "/:productId/reviews/:reviewId",
+  checkReviewSchema,
+  triggerBadRequest,
   isProductExisted,
   async (req, res, next) => {
     try {
