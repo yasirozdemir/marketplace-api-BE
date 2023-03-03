@@ -11,6 +11,7 @@ import {
   writeReviews,
 } from "../../lib/fs-tools.js";
 import { checkProductSchema, triggerBadRequest } from "../validation.js";
+import { isProductExisted } from "../../lib/middlewares.js";
 
 const productsRouter = Express.Router();
 
@@ -52,15 +53,11 @@ productsRouter.get("/", async (req, res, next) => {
 });
 
 // GET single product
-productsRouter.get("/:productId", async (req, res, next) => {
+productsRouter.get("/:productId", isProductExisted, async (req, res, next) => {
   try {
     const products = await getProducts();
     const specificProduct = products.find((p) => p.id === req.params.productId);
-    if (specificProduct) {
-      res.send(specificProduct);
-    } else {
-      next(createHttpError(404, `Product with id ${req.params.id} not found!`));
-    }
+    res.send(specificProduct);
   } catch (error) {
     next(error);
   }
@@ -150,19 +147,6 @@ productsRouter.post(
     }
   }
 );
-
-export const isProductExisted = async (req, res, next) => {
-  const products = await getProducts();
-  const specificProduct = products.find((p) => p.id === req.params.productId);
-  if (specificProduct) next();
-  else
-    next(
-      createHttpError(
-        404,
-        `Review cannot saved! Product with id ${req.params.productId} not found!`
-      )
-    );
-};
 
 // POST a review on a product
 productsRouter.post(
