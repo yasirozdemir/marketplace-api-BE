@@ -1,6 +1,7 @@
 import Express from "express";
 import listEndpoints from "express-list-endpoints";
 import productsRouter from "./api/products/index.js";
+import reviewsRouter from "./api/reviews/index.js";
 import {
   badRequestHandler,
   genericErrorHandler,
@@ -16,6 +17,7 @@ server.use(Express.static(publicFolderPath));
 server.use(Express.json());
 
 server.use("/products", productsRouter);
+server.use("/products", reviewsRouter);
 
 server.use(badRequestHandler);
 server.use(unauthorizedHandler);
