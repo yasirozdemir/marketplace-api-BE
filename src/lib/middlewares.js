@@ -8,9 +8,6 @@ export const isProductExisted = async (req, res, next) => {
     next();
   } else
     next(
-      createHttpError(
-        404,
-        `Review cannot saved! Product with id ${req.params.productId} not found!`
-      )
+      createHttpError(404, `Product with id ${req.params.productId} not found!`)
     );
 };

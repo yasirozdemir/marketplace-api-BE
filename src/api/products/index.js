@@ -190,4 +190,28 @@ productsRouter.get(
   }
 );
 
+// GET a single review
+productsRouter.get(
+  "/:productId/reviews/:reviewId",
+  isProductExisted,
+  async (req, res, next) => {
+    try {
+      const reviews = await getReviews();
+      const specificReview = reviews.find((r) => r.id === req.params.reviewId);
+      if (specificReview) {
+        res.send(specificReview);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Review with id ${req.params.reviewId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default productsRouter;
