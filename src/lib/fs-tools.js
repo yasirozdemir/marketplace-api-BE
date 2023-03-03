@@ -12,13 +12,11 @@ export const dataFolderPath = join(
 
 export const productsJSONPath = join(dataFolderPath, "products.json");
 export const productsPublicPath = join(publicFolderPath, "img/products");
-
-export const reviewsJSONPath = join(dataFolderPath, "reviews.json");
-
 export const getProducts = () => readJSON(productsJSONPath);
 export const writeProducts = (products) =>
   writeJSON(productsJSONPath, products);
 
+export const reviewsJSONPath = join(dataFolderPath, "reviews.json");
 export const getReviews = () => readJSON(reviewsJSONPath);
 export const writeReviews = (reviews) => writeJSON(reviewsJSONPath, reviews);
 
