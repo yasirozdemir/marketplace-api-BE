@@ -50,4 +50,26 @@ productsRouter.get("/:productId", async (req, res, next) => {
   }
 });
 
+// PUT update a single product
+productsRouter.put("/:productId", async (req, res, next) => {
+  try {
+    const products = await getProducts();
+    const index = products.findIndex((p) => p.id === req.params.productId);
+    if (index !== -1) {
+      const updatedProduct = {
+        ...products[index],
+        ...req.body,
+        updatedAt: new Date(),
+      };
+      products[index] = updatedProduct;
+      await writeProducts(products);
+      res.send({ message: "Product updated!", id: updatedProduct.id });
+    } else {
+      next(createHttpError(404, `Product with id ${req.params.id} not found!`));
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default productsRouter;
