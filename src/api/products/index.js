@@ -8,28 +8,36 @@ import {
   saveProductsImage,
   writeProducts,
 } from "../../lib/fs-tools.js";
+import { checkProductSchema, triggerBadRequest } from "../validation.js";
 
 const productsRouter = Express.Router();
 
 // POST a product
-productsRouter.post("/", async (req, res, next) => {
-  try {
-    const products = await getProducts();
-    const newProduct = {
-      ...req.body,
-      id: uniqid(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    products.push(newProduct);
-    await writeProducts(products);
-    res
-      .status(201)
-      .send({ success: true, message: "Product created!", id: newProduct.id });
-  } catch (error) {
-    next(error);
+productsRouter.post(
+  "/",
+  checkProductSchema,
+  triggerBadRequest,
+  async (req, res, next) => {
+    try {
+      const products = await getProducts();
+      const newProduct = {
+        ...req.body,
+        id: uniqid(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      products.push(newProduct);
+      await writeProducts(products);
+      res.status(201).send({
+        success: true,
+        message: "Product created!",
+        id: newProduct.id,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 // GET all products
 productsRouter.get("/", async (req, res, next) => {
@@ -57,30 +65,37 @@ productsRouter.get("/:productId", async (req, res, next) => {
 });
 
 // PUT update a single product
-productsRouter.put("/:productId", async (req, res, next) => {
-  try {
-    const products = await getProducts();
-    const index = products.findIndex((p) => p.id === req.params.productId);
-    if (index !== -1) {
-      const updatedProduct = {
-        ...products[index],
-        ...req.body,
-        updatedAt: new Date(),
-      };
-      products[index] = updatedProduct;
-      await writeProducts(products);
-      res.send({
-        success: true,
-        message: "Product updated!",
-        id: updatedProduct.id,
-      });
-    } else {
-      next(createHttpError(404, `Product with id ${req.params.id} not found!`));
+productsRouter.put(
+  "/:productId",
+  checkProductSchema,
+  triggerBadRequest,
+  async (req, res, next) => {
+    try {
+      const products = await getProducts();
+      const index = products.findIndex((p) => p.id === req.params.productId);
+      if (index !== -1) {
+        const updatedProduct = {
+          ...products[index],
+          ...req.body,
+          updatedAt: new Date(),
+        };
+        products[index] = updatedProduct;
+        await writeProducts(products);
+        res.send({
+          success: true,
+          message: "Product updated!",
+          id: updatedProduct.id,
+        });
+      } else {
+        next(
+          createHttpError(404, `Product with id ${req.params.id} not found!`)
+        );
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 // DELETE a single product
 productsRouter.delete("/:productId", async (req, res, next) => {
