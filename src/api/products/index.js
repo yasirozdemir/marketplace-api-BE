@@ -35,4 +35,19 @@ productsRouter.get("/", async (req, res, next) => {
   }
 });
 
+// GET single product
+productsRouter.get("/:productId", async (req, res, next) => {
+  try {
+    const products = await getProducts();
+    const specificProduct = products.find((p) => p.id === req.params.productId);
+    if (specificProduct) {
+      res.send(specificProduct);
+    } else {
+      next(createHttpError(404, `Product with id ${req.params.id} not found!`));
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default productsRouter;
